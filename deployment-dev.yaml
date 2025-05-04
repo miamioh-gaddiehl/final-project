@@ -62,6 +62,7 @@ kind: Service
 metadata:
   name: flask-dev-service
 spec:
+  type: NodePort
   ports:
   - protocol: TCP
     port: 80
