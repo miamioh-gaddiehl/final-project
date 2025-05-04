@@ -24,7 +24,7 @@ FROM base AS app
 # Copy application files
 COPY main.py ./
 COPY requirements-test.txt ./
-COPY app ./
-COPY tests ./
+COPY ./app ./app/
+COPY ./tests ./tests/
 
 RUN pip install --no-cache-dir -r requirements-test.txt
