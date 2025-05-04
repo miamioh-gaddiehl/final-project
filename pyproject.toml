@@ -1,0 +1,28 @@
+[tool.black]
+line-length = 120
+
+[tool.pylint.messages_control]
+max-line-length = 120
+ignore-long-lines = "^.*https?://.+$"
+
+disable = [
+    "C0114", # module docstring
+    "W0511", # to-do comments
+    "R0902", # too many instance attributes
+    "R0904", # too many public methods
+    "R0914", # too many local vars
+    "E0401", # import error (pylint not executed in the correct venv) # should be enabled
+    "R0801", # Duplicate lines in files
+    "C0115", # Missing class docstring
+    "R0903"  # Too few public methods
+]
+
+[tool.isort]
+line_length = 120
+profile = "black"
+py_version = "auto"
+
+[tool.autoflake]
+remove-unused-variables = true
+remove-all-unused-imports = true
+expand-star-imports = true

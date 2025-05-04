@@ -1,0 +1,7 @@
+notes.db
+pyproject.toml
+requirements-dev.txt
+Jenkinsfile
+Dockerfile*
+deployment*.yaml
+.venv

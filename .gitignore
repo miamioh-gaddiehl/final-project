@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.eggs/
+dist/
+build/
+sdist/
+*.egg-info/
+*.whl
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+coverage.xml
+nosetests.xml
+pytest.xml
+*.log
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Sphinx stuff:
+docs/_build
+
+# Pycharm
+.idea/
+*.iml
+
+# Environments
+.venv
+venv/
+env/
+ENV/
+
+# OS or Editor Folders and Files
+.DS_Store
+Thumbs.db
+
+# Database
+notes.db
