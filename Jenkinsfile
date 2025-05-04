@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     def flaskNode = sh(
-                        script: "kubectl get pods -l app=flask -o jsonpath='{.items[0].spec.nodeName}'",
+                        script: "kubectl get pods -l app=flask-dev -o jsonpath='{.items[0].spec.nodeName}'",
                         returnStdout: true
                     ).trim()
 
