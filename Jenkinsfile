@@ -67,7 +67,7 @@ pipeline {
                     sh """
                         docker run --rm qa-tests /bin/bash -c "
                             pytest ./tests/test_static.py &&
-                            pytest ./tests/test_dynamic.py --url "http://${nodeIp}:30080"
+                            pytest ./tests/test_dynamic.py --url "http://${nodeIp}:8080"
                         "
                     """
                 }

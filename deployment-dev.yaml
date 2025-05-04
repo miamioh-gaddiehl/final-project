@@ -25,11 +25,26 @@ kind: Service
 metadata:
   name: flask-dev-service
 spec:
-  type: NodePort
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 5000
-    nodePort: 30080
+  type: ClusterIP
   selector:
     app: flask-dev
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flask-dev-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: flask-dev-service
+                port:
+                  number: 8080
