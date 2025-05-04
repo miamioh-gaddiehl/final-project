@@ -19,13 +19,6 @@ spec:
           image: cithit/gaddiehl:latest
           ports:
             - containerPort: 5000
-          volumeMounts:
-            - name: nfs-storage
-              mountPath: /nfs
-      volumes:
-        - name: nfs-storage
-          persistentVolumeClaim:
-            claimName: flask-pvc
 ---
 apiVersion: v1
 kind: Service
