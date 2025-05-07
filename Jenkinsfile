@@ -83,23 +83,25 @@ pipeline {
 
         stage ("Run Security Checks") {
             steps {
-                def flaskNode = sh(
-                        script: "kubectl get pods -l app=flask-dev -o jsonpath='{.items[0].spec.nodeName}'",
+                script {
+                    def flaskNode = sh(
+                            script: "kubectl get pods -l app=flask-dev -o jsonpath='{.items[0].spec.nodeName}'",
+                            returnStdout: true
+                        ).trim()
+
+                    def nodeIp = sh(
+                        script: "kubectl get node ${flaskNode} -o jsonpath='{.status.addresses[?(@.type==\"InternalIP\")].address}'",
                         returnStdout: true
                     ).trim()
 
-                def nodeIp = sh(
-                    script: "kubectl get node ${flaskNode} -o jsonpath='{.status.addresses[?(@.type==\"InternalIP\")].address}'",
-                    returnStdout: true
-                ).trim()
-
-                sh "docker pull public.ecr.aws/portswigger/dastardly:latest"
-                sh """
-                    docker run --user \$(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
-                    -e BURP_START_URL=http://${nodeIp}:30080 \
-                    -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
-                    public.ecr.aws/portswigger/dastardly:latest
-                """
+                    sh "docker pull public.ecr.aws/portswigger/dastardly:latest"
+                    sh """
+                        docker run --user \$(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
+                        -e BURP_START_URL=http://${nodeIp}:30080 \
+                        -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
+                        public.ecr.aws/portswigger/dastardly:latest
+                    """
+                }
             }
         }
 
