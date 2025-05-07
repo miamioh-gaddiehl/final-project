@@ -18,6 +18,13 @@ pipeline {
             }
         }
 
+        stage('Lint HTML') {
+            steps {
+                sh "npm install htmlhint --save-dev"
+                sh "npx htmlhint *.html"
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -60,9 +67,9 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
-                    sh 'docker stop qa-tests || true'
-                    sh 'docker rm qa-tests || true'
-                    sh 'docker build -t qa-tests -f Dockerfile.test .'
+                    sh "docker stop qa-tests || true"
+                    sh "docker rm qa-tests || true"
+                    sh "docker build -t qa-tests -f Dockerfile.test .""
 
                     sh """
                         docker run --rm qa-tests /bin/bash -c "
@@ -71,6 +78,28 @@ pipeline {
                         "
                     """
                 }
+            }
+        }
+
+        stage ("Run Security Checks") {
+            steps {
+                def flaskNode = sh(
+                        script: "kubectl get pods -l app=flask-dev -o jsonpath='{.items[0].spec.nodeName}'",
+                        returnStdout: true
+                    ).trim()
+
+                def nodeIp = sh(
+                    script: "kubectl get node ${flaskNode} -o jsonpath='{.status.addresses[?(@.type==\"InternalIP\")].address}'",
+                    returnStdout: true
+                ).trim()
+
+                sh "docker pull public.ecr.aws/portswigger/dastardly:latest"
+                sh """
+                    docker run --user $(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
+                    -e BURP_START_URL=http://${nodeIp}:30080 \
+                    -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
+                    public.ecr.aws/portswigger/dastardly:latest
+                """
             }
         }
 
