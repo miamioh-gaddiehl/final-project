@@ -77,6 +77,29 @@ def test_update_note(client):
     assert note["y"] == 250
     assert note["content"] == "Updated"
 
+    update_data = {"content": "Updated Again"}
+    response = client.put(f"/api/notes/{note_id}", json=update_data)
+    note = response.get_json()
+    assert note["x"] == 200
+    assert note["y"] == 250
+    assert note["content"] == "Updated Again"
+    assert response.status_code == 200
+
+    update_data = {"x": 300}
+    response = client.put(f"/api/notes/{note_id}", json=update_data)
+    note = response.get_json()
+    assert note["x"] == 300
+    assert note["y"] == 250
+    assert note["content"] == "Updated Again"
+    assert response.status_code == 200
+
+    update_data = {"y": 300}
+    response = client.put(f"/api/notes/{note_id}", json=update_data)
+    note = response.get_json()
+    assert note["x"] == 300
+    assert note["y"] == 300
+    assert note["content"] == "Updated Again"
+    assert response.status_code == 200
 
 def test_delete_note(client):
     data = {"x": 10, "y": 10, "content": "To Delete"}

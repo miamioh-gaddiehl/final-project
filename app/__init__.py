@@ -84,13 +84,19 @@ def create_app(database: str, testing: bool = False, **kwargs):
             abort(404)
 
         data = request.get_json()
-        x = data.get("x", 40)
-        y = data.get("y", 40)
-        if not isinstance(x, int) or not isinstance(y, int):
-            return jsonify({'message': "x and y must be integers"}), 400
+        x = data.get("x", None)
+        y = data.get("y", None)
 
-        note.x = x
-        note.y = y
+        if x is not None:
+            if not isinstance(x, int):
+                return jsonify({'message': "x must be integers"}), 400
+            note.x = x
+
+        if y is not None:
+            if not isinstance(y, int):
+                return jsonify({'message': "y must be integers"}), 400
+            note.y = y
+
         new_content = data.get("content", None)
         if new_content is not None:
             note.content = escape(new_content)
