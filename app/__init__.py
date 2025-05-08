@@ -1,10 +1,12 @@
 from datetime import UTC, datetime
-
+import random
 from flask import Flask, abort, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from markupsafe import escape
 
 db = SQLAlchemy()
 
+NOTE_COLORS = ['#FFFB7D', '#C2F0FF', '#C7FFB5', '#FFC2E2', '#FFD59E']
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,11 +54,16 @@ def create_app(database: str, testing: bool = False, **kwargs):
     @app.route("/api/notes", methods=["POST"])
     def create_note():
         data = request.get_json()
+        x = data.get("x", 40)
+        y = data.get("y", 40)
+        if not isinstance(x, int) or not isinstance(y, int):
+            return jsonify({'message': "x and y must be integers"}), 400
+
         note = Note(
-            x=data.get("x", 40),
-            y=data.get("y", 40),
-            color=data.get("color", "#FFFB7D"),
-            content=data.get("content", ""),
+            x=x,
+            y=y,
+            color=random.choice(NOTE_COLORS),
+            content=escape(data.get("content", "")),
         )
         db.session.add(note)
         db.session.commit()
@@ -77,10 +84,16 @@ def create_app(database: str, testing: bool = False, **kwargs):
             abort(404)
 
         data = request.get_json()
-        note.x = data.get("x", note.x)
-        note.y = data.get("y", note.y)
-        note.content = data.get("content", note.content)
-        note.color = data.get("color", note.color)
+        x = data.get("x", 40)
+        y = data.get("y", 40)
+        if not isinstance(x, int) or not isinstance(y, int):
+            return jsonify({'message': "x and y must be integers"}), 400
+
+        note.x = x
+        note.y = y
+        new_content = data.get("content", None)
+        if new_content is not None:
+            note.content = escape(new_content)
         db.session.commit()
         return jsonify(note.to_dict())
 

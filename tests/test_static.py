@@ -20,18 +20,35 @@ def test_get_notes_empty(client):
 
 
 def test_create_note(client):
-    data = {"x": 100, "y": 150, "color": "#FFFB7D", "content": "Hello!"}
+    data = {"x": 100, "y": 150, "content": "Hello!"}
     response = client.post("/api/notes", json=data)
     assert response.status_code == 200
     note = response.get_json()
     assert note["x"] == 100
     assert note["y"] == 150
-    assert note["color"] == "#FFFB7D"
     assert note["content"] == "Hello!"
+    assert note["color"] is not None
 
+def test_fail_creating_note(client):
+    data = {"x": "Invalid", "y": 150, "content": "Hello!"}
+    response = client.post("/api/notes", json=data)
+    assert response.status_code == 400
+
+    data["x"] = 150
+    data["y"] = "Invalid"
+    response = client.post("/api/notes", json=data)
+    assert response.status_code == 400
+
+def test_reflected_xss(client):
+    data = {"x": 150, "y": 150, "content": "< >"}
+    response = client.post("/api/notes", json=data)
+    note = response.get_json()
+    assert response.status_code == 200
+    assert "<" not in note["content"]
+    assert ">" not in note["content"]
 
 def test_get_note_by_id(client):
-    data = {"x": 10, "y": 20, "color": "#FFFB7D", "content": "Check me"}
+    data = {"x": 10, "y": 20, "content": "Check me"}
     response = client.post("/api/notes", json=data)
     assert response.status_code == 200
 
@@ -44,10 +61,11 @@ def test_get_note_by_id(client):
     assert note["content"] == "Check me"
     assert note["x"] == 10
     assert note["y"] == 20
+    assert note["color"] is not None
 
 
 def test_update_note(client):
-    data = {"x": 10, "y": 10, "color": "#FFFB7D", "content": "Initial"}
+    data = {"x": 10, "y": 10, "content": "Initial"}
     response = client.post("/api/notes", json=data)
     note_id = response.get_json()["id"]
 
@@ -61,7 +79,7 @@ def test_update_note(client):
 
 
 def test_delete_note(client):
-    data = {"x": 10, "y": 10, "color": "#FFFB7D", "content": "To Delete"}
+    data = {"x": 10, "y": 10, "content": "To Delete"}
     response = client.post("/api/notes", json=data)
     note_id = response.get_json()["id"]
 

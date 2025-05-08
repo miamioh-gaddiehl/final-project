@@ -1,6 +1,5 @@
 let zIndexCounter = 1;
 const notes = [];
-const NOTE_COLORS = ['#FFFB7D', '#C2F0FF', '#C7FFB5', '#FFC2E2', '#FFD59E'];
 const TRASH_ZONE = document.getElementById('trash');
 
 let currentDraggedNote = null;
@@ -35,8 +34,7 @@ function createNoteFromData({id, x, y, content, color}) {
 }
 
 function createNewNote() {
-    const color = NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)];
-    const newNoteData = {x: 40, y: 40, content: "", color};
+    const newNoteData = {x: 40, y: 40, content: ""};
     fetch("/api/notes", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
